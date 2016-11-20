@@ -1,0 +1,7 @@
+.vscode
+node_modules
+typings
+src/appConfig.json
+src/plugins/casino/casinoBalances.json
+*.js
+*.js.map

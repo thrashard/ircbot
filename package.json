@@ -1,0 +1,12 @@
+{
+  "name": "ircbot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/app.js",
+  "dependencies": {
+    "chokidar": "^1.6.0"
+  },
+  "devDependencies": {},
+  "author": "",
+  "license": "ISC"
+}

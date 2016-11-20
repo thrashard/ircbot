@@ -1,0 +1,13 @@
+{
+    "ircServer": {
+        "host": "my.domain.org",
+        "port": 8008,
+        "password": "jabroni",
+        "username": "bot",
+        "channel": "#whatever"
+    },
+    "imageSearch": {
+        "cx": "x",
+        "key": "x"
+    }
+}
