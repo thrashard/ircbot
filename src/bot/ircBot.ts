@@ -91,11 +91,12 @@ class IrcBot {
 
         if (message.fullText.indexOf(this.messagePrefix) === 0) {
           this.notifyPlugins(message);
-
+        } else {
           if (this._messageCache != null) {
             this._messageCache.recordMessage(message);
           }
         }
+
         break;
     }
   }
