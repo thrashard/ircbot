@@ -4,7 +4,7 @@ import https = require('https');
 
 export = EveId;
 
-class EveId extends Plugin {
+class EveId implements Plugin {
   public command = 'eveid';
   public run(message: Message, reply: Function): void {
     var options = {

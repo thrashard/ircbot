@@ -3,7 +3,7 @@ import Message = require('../bot/message');
 
 export = Choose;
 
-class Choose extends Plugin {
+class Choose implements Plugin {
   public command = 'choose';
   public run(message: Message, reply: Function): void {
     var options = message.text.split(',');

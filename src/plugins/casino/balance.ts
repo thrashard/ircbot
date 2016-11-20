@@ -4,7 +4,7 @@ import Casino = require('./casino');
 
 export = Balance;
 
-class Balance extends Plugin {
+class Balance implements Plugin {
   public command = 'balance';
   public run(message: Message, reply: Function): void {
     Casino.getPlayerBalance(message.nick, (balance) => {

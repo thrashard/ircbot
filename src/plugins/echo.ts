@@ -3,7 +3,7 @@ import Message = require('../bot/message');
 
 export = Echo;
 
-class Echo extends Plugin {
+class Echo implements Plugin {
   public command = 'echo';
   public run(message: Message, reply: Function): void {
     reply(message.text);

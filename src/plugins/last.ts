@@ -4,7 +4,7 @@ import MessageCache = require('../bot/messageCache');
 
 export = Last;
 
-class Last extends Plugin {
+class Last implements Plugin {
     public command = 'last';
     public run(message: Message, reply: Function): void {
         //default to one message
