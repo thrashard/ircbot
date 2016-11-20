@@ -89,7 +89,7 @@ class IrcBot {
         message.channel = message.args[0];
         message.fullText = message.args[1];
 
-        if (message.fullText.startsWith(this.messagePrefix)) {
+        if (message.fullText.indexOf(this.messagePrefix) === 0) {
           this.notifyPlugins(message);
 
           if (this._messageCache != null) {
