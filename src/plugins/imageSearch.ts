@@ -7,8 +7,7 @@ import https = require('https');
 export = ImageSearch;
 
 class ImageSearch extends Plugin {
-  public name = 'google image search';
-  public command = '!im';
+  public command = 'im';
   public run(message: Message, reply: Function): void {
     AppConfig.getSettings('imageSearch', (settings: any) => {
       var options = {

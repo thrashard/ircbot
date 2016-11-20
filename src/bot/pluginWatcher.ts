@@ -3,30 +3,32 @@ var chokidar = require('chokidar');
 
 export = PluginWatcher;
 
+declare type PluginCallback = (p: Plugin) => void;
+
 class PluginWatcher {
-  public register = (callback) => {
+  public register(callback: PluginCallback): void {
     var watcher = chokidar.watch('./plugins/**/*.js', {
       ignored: /[\/\\]\./, persistent: true
     });
 
-    var updatePlugin = (path) => {
+    var updatePlugin = (path: string) => {
       path = '../' + path;
 
       delete require.cache[require.resolve(path)];
 
-      var pluginClass = require(path);
+      var plugin = require(path);
 
-      var plugin = new pluginClass();
+      var pluginInstance: Plugin = new plugin();
 
-      if (this.isValidPlugin(plugin)) {
-        callback(plugin);
+      if (this.isValidPlugin(pluginInstance)) {
+        callback(pluginInstance);
       }
     };
 
     watcher.on('add', updatePlugin).on('change', updatePlugin);
   }
 
-  private isValidPlugin(plugin: Plugin) {
-    return (plugin && plugin.run && plugin.command && plugin.name);
+  private isValidPlugin(plugin: Plugin): boolean {
+    return Boolean(plugin && plugin.run && plugin.command);
   }
 }

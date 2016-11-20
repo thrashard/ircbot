@@ -1,21 +1,26 @@
-let PluginWatcher = require('./bot/pluginWatcher');
-let IrcBot = require('./bot/ircBot');
-let AppConfig = require('./appConfig');
+import PluginWatcher = require('./bot/pluginWatcher');
+import IrcBot = require('./bot/ircBot');
+import AppConfig = require('./appConfig');
+import MessageCache = require('./bot/messageCache');
 
-AppConfig.getSettings('ircServer', (settings: any) => {
-  let bot = new IrcBot();
+AppConfig.getSettings('', (settings: any) => {
+  let bot: IrcBot = new IrcBot(settings.messagePrefix);
 
   bot.connect({
-    host: settings.host,
-    port: settings.port,
-    password: settings.password,
-    username: settings.username,
-    nickname: settings.username,
-    realname: settings.username,
-    channel: settings.channel
+    host: settings.ircServer.host,
+    port: settings.ircServer.port,
+    password: settings.ircServer.password,
+    username: settings.ircServer.username,
+    nickname: settings.ircServer.username,
+    realname: settings.ircServer.username,
+    channel: settings.ircServer.channel
   });
 
-  let watcher = new PluginWatcher();
-
+  let watcher: PluginWatcher = new PluginWatcher();
+  
   watcher.register(bot.registerPlugin);
+
+  if(settings.messageCache && settings.messageCache.enabled) {
+      bot.messageCache = MessageCache;
+  }
 });

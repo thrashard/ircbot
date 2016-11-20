@@ -5,8 +5,7 @@ import Casino = require('./casino');
 export = Slots;
 
 class Slots extends Plugin {
-    public name = 'slots';
-    public command = '!slots';
+    public command = 'slots';
     public run(message: Message, reply: Function): void {
         Casino.getPlayerBalance(message.nick, (balance: number) => {
             var betAmount: number = parseInt(message.text);

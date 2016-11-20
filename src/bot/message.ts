@@ -10,4 +10,5 @@ interface Message {
     server: string;
     command: string;
     args: Array<string>;
+    fullText: string;
 }

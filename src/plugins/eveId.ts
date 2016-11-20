@@ -5,8 +5,7 @@ import https = require('https');
 export = EveId;
 
 class EveId extends Plugin {
-  public name = 'eve id lookup';
-  public command = '!eveid';
+  public command = 'eveid';
   public run(message: Message, reply: Function): void {
     var options = {
       host: 'api.eveonline.com',

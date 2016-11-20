@@ -2,13 +2,23 @@ import tls = require('tls');
 import Plugin = require('./plugin');
 import Message = require('./message');
 
-export = ircBot;
+export = IrcBot;
 
-class ircBot {
+class IrcBot {
   private socket = null;
   private plugins: Plugin[] = [];
+  private _messageCache;
+  private messagePrefix: string;
 
-  public connect = (ircOpts):void => {
+  constructor(messagePrefix: string) {
+    this.messagePrefix = messagePrefix;
+  }
+
+  set messageCache(instance) {
+    this._messageCache = instance;
+  }
+
+  public connect(ircOpts): void {
     let tlsOpts = {
       host: ircOpts.host,
       port: ircOpts.port,
@@ -19,13 +29,7 @@ class ircBot {
       console.log('connected to ' + tlsOpts.host + ':' + tlsOpts.port);
 
       this.socket.setEncoding('utf-8');
-    });
 
-    this.socket.writeIrc = (cmd, message) => {
-      this.socket.write(cmd + ' ' + message + '\r\n');
-    };
-
-    this.socket.on('connect', (data) => {
       if (ircOpts.password) {
         this.socket.writeIrc('PASS', ircOpts.password);
       }
@@ -37,6 +41,10 @@ class ircBot {
         this.socket.writeIrc('JOIN', ircOpts.channel);
       }
     });
+
+    this.socket.writeIrc = (cmd, message) => {
+      this.socket.write(cmd + ' ' + message + '\r\n');
+    };
 
     this.socket.on('data', (data) => {
       let message = this.createMessage(data);
@@ -57,48 +65,56 @@ class ircBot {
   }
 
   public registerPlugin = (plugin: Plugin): void => {
-    if (!plugin || !plugin.run || !plugin.command || !plugin.name) {
+    if (!plugin || !plugin.run || !plugin.command) {
       console.warn('tried to register an invalid moldule: ' + JSON.stringify(plugin));
     }
 
-    let pluginIdx = this.plugins.map(m => { return m.name; }).indexOf(plugin.name);
+    let pluginIdx = this.plugins.map(m => { return m.command; }).indexOf(plugin.command);
 
     if (pluginIdx !== -1) {
-      console.info('updating plugin with name: ' + plugin.name);
+      console.info('updating plugin with command: ' + plugin.command);
       this.plugins.splice(pluginIdx, 1);
     } else {
-      console.info('adding plugin with name: ' + plugin.name);
+      console.info('adding plugin with command: ' + plugin.command);
     }
 
     this.plugins.push(plugin);
   }
 
-  private processMessage = (message): void => {
+  private processMessage(message: Message): void {
     switch (message.command) {
       case 'PING':
         return this.socket.writeIrc('PONG', message.args[0]);
       case 'PRIVMSG':
         message.channel = message.args[0];
-        message.text = message.args[1];
-        this.notifyPlugins(message);
+        message.fullText = message.args[1];
+
+        if (message.fullText.startsWith(this.messagePrefix)) {
+          this.notifyPlugins(message);
+
+          if (this._messageCache != null) {
+            this._messageCache.recordMessage(message);
+          }
+        }
+        break;
     }
   }
 
-  private sendMessage = (channel): Function => {
+  private sendMessage(channel): Function {
     return (message) => {
       this.socket.writeIrc('PRIVMSG', channel + ' :' + message.replace(/(\r\n|\n|\r)/gm, ''));
     };
   }
 
-  private notifyPlugins = (message: Message): void => {
-    let textParts = message.text.split(' ');
+  private notifyPlugins(message: Message): void {
+    let textParts = message.fullText.split(' ');
     let command = textParts.shift();
 
     message.text = textParts.join(' ');
 
     this.plugins.forEach(m => {
-      if (m.command === command) {
-        m.run(message, this.sendMessage(message.channel))
+      if (this.messagePrefix + m.command === command) {
+        m.run(message, this.sendMessage(message.channel));
       }
     });
   }

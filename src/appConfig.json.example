@@ -1,10 +1,15 @@
 {
+    "messagePrefix": "!",
     "ircServer": {
         "host": "my.domain.org",
         "port": 8008,
         "password": "jabroni",
         "username": "bot",
         "channel": "#whatever"
+    },
+    "messageCache":{
+        "enabled": true,
+        "maxMessages": 10
     },
     "imageSearch": {
         "cx": "x",
